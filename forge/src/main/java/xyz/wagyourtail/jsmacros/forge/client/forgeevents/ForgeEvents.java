@@ -57,7 +57,7 @@ public class ForgeEvents {
         }
     }
 
-    public static void onRegisterCommands(RegisterClientCommandsEvent event) {
+    public static void onClientCommand(RegisterClientCommandsEvent event) {
         CommandBuilderForge.onRegisterEvent(event);
     }
 }
