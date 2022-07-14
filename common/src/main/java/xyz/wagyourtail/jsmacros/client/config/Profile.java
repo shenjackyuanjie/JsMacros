@@ -3,7 +3,7 @@ package xyz.wagyourtail.jsmacros.client.config;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 import xyz.wagyourtail.jsmacros.client.JsMacros;
 import xyz.wagyourtail.jsmacros.client.access.CustomClickEvent;
 import xyz.wagyourtail.jsmacros.client.access.IChatHud;
