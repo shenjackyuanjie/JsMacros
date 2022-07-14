@@ -13,9 +13,9 @@ import xyz.wagyourtail.jsmacros.client.api.helpers.TextHelper;
 @Mixin(ChatHud.class)
 class MixinChatHud {
 
-    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At(value = "HEAD"))
+    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At(value = "HEAD"), argsOnly = true)
     private Text modifyChatMessage(Text text) {
-        if (text == null) return text;
+        if (text == null) return null;
         final TextHelper result = new EventRecvMessage(text).text;
         if (result == null) return null;
         if (!result.getRaw().equals(text)) {

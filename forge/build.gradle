@@ -12,6 +12,7 @@ architectury {
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    include
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
@@ -19,7 +20,7 @@ configurations {
 
 loom {
     forge {
-        mixinConfigs "fabric-command-api-v1.mixins.json", "jsmacros-forge.mixins.json"
+        mixinConfigs "jsmacros-forge.mixins.json"
     }
 }
 
@@ -39,12 +40,16 @@ dependencies {
     }
     include "com.neovisionaries:nv-websocket-client:2.10"
     include "org.javassist:javassist:3.28.0-GA"
+    include "com.mojang:brigadier:${project.brigadier_version}"
+
+
+    implementation 'org.spongepowered:mixin:0.7.11-SNAPSHOT'
+    shadowCommon "org.spongepowered:mixin:0.7.11-SNAPSHOT"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
 
     //ij wasn't seeing this, even tho it's part of namedElements...
     implementation(project(":common").sourceSets.core.output)
-
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
 
     common(project(path: ":javascript_extension", configuration: "namedElements")) { transitive false }
@@ -56,10 +61,15 @@ processResources {
 
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
+        expand "mcversion": project.minecraft_version
     }
 
     filesMatching("jsmacros.extension.json") {
         expand "dependencies": configurations.jsmacrosExtensionInclude.files.collect { it.name }.join(" ")
+    }
+
+    filesMatching("mcmod.info") {
+        expand "version": project.version, "mcversion": project.minecraft_version
     }
 }
 
@@ -69,6 +79,9 @@ shadowJar {
 
     // exclude icu that's "accidentally" (I hope) included in graaljs jar
     exclude "com/ibm/**"
+    exclude "META-INF/**.SF"
+    exclude "META-INF/**.RSA"
+    exclude "META-INF/**.DSA"
 
     mergeServiceFiles()
 }
@@ -82,6 +95,11 @@ remapJar {
         include '*'
         into "META-INF/jsmacrosdeps"
     }
+
+    from(configurations.include.files) {
+        include '*'
+        into 'META-INF/jars/'
+    }
 }
 
 jar {
@@ -89,8 +107,11 @@ jar {
 
     manifest {
         attributes([
-                'MixinConnector': 'xyz.wagyourtail.jsmacros.forge.client.JsMacrosEarlyRiser',
-                'JsMacrosDeps': configurations.include.files.collect { it.name }.join(" ")
+                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'FMLCorePlugin': 'xyz.wagyourtail.jsmacros.forge.client.JsMacrosEarlyRiser',
+                'JsMacrosDeps': configurations.include.files.collect { it.name }.join(" "),
+                'FMLCorePluginContainsFMLMod': true,
+                'ForceLoadAsMod': true
         ])
     }
 }

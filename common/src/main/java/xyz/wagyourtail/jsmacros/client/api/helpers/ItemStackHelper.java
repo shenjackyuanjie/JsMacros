@@ -1,10 +1,10 @@
 package xyz.wagyourtail.jsmacros.client.api.helpers;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.item.itemgroup.ItemGroup;
+import net.minecraft.nbt.NbtCompound;
 import xyz.wagyourtail.jsmacros.core.helpers.BaseHelper;
 
 /**
@@ -14,7 +14,7 @@ import xyz.wagyourtail.jsmacros.core.helpers.BaseHelper;
 @SuppressWarnings("unused")
 public class ItemStackHelper extends BaseHelper<ItemStack> {
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
-    
+
     public ItemStackHelper(ItemStack i) {
         super(i);
     }
@@ -69,7 +69,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return was string before 1.6.5
      */
     public TextHelper getDefaultName() {
-        return new TextHelper(base.getItem().getName());
+        return new TextHelper(base.getItem().getDisplayName(base));
     }
     
     /**
@@ -98,7 +98,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public NBTElementHelper<?> getNBT() {
-        CompoundTag tag = base.getTag();
+        NbtCompound tag = base.getNbt();
         if (tag != null) return NBTElementHelper.resolve(tag);
         else return null;
     }
@@ -108,9 +108,9 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public String getCreativeTab() {
-        ItemGroup g = base.getItem().getGroup();
+        ItemGroup g = base.getItem().getItemGroup();
         if (g != null)
-            return g.getName();
+            return g.getTranslationKey();
         else
             return null;
     }
@@ -128,7 +128,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public String getItemId() {
-        return Registry.ITEM.getId(base.getItem()).toString();
+        return Item.REGISTRY.getIdentifier(base.getItem()).toString();
     }
     
     /**
@@ -166,7 +166,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isItemEqual(ItemStackHelper ish) {
-        return base.isItemEqual(ish.getRaw()) && base.getDamage() == ish.getRaw().getDamage();
+        return base.equalsIgnoreNbt(ish.getRaw()) && base.getDamage() == ish.getRaw().getDamage();
     } 
     
     /**
@@ -175,7 +175,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isItemEqual(ItemStack is) {
-        return base.isItemEqual(is) && base.getDamage() == is.getDamage();
+        return base.equalsIgnoreNbt(is) && base.getDamage() == is.getDamage();
     }
     
     /**
@@ -184,7 +184,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isItemEqualIgnoreDamage(ItemStackHelper ish) {
-        return base.isItemEqualIgnoreDamage(ish.getRaw());
+        return this.base == ish.base;
     }
     
     /**
@@ -193,7 +193,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isItemEqualIgnoreDamage(ItemStack is) {
-        return base.isItemEqualIgnoreDamage(is);
+        return base == is;
     }
     
     /**
@@ -202,7 +202,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isNBTEqual(ItemStackHelper ish) {
-        return ItemStack.areTagsEqual(base, ish.getRaw());
+        return ItemStack.equalsIgnoreDamage(base, ish.getRaw());
     }
     
     /**
@@ -211,7 +211,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isNBTEqual(ItemStack is) {
-        return ItemStack.areTagsEqual(base, is);
+        return ItemStack.equalsIgnoreDamage(base, is);
     }
 
     /**
@@ -219,7 +219,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public boolean isOnCooldown() {
-        return MinecraftClient.getInstance().player.getItemCooldownManager().isCoolingDown(base.getItem());
+        return false;
     }
 
     /**
@@ -227,7 +227,7 @@ public class ItemStackHelper extends BaseHelper<ItemStack> {
      * @return
      */
     public float getCooldownProgress() {
-        return mc.player.getItemCooldownManager().getCooldownProgress(base.getItem(), mc.getTickDelta());
+        return 1f;
     }
 
     /**
