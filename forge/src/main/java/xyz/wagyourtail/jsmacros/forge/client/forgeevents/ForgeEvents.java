@@ -17,7 +17,6 @@ public class ForgeEvents {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     public static void init() {
-        OverlayRegistry.registerOverlayBelow(ForgeIngameGui.HUD_TEXT_ELEMENT, "jsmacros_hud", ForgeEvents::renderHudListener);
         MinecraftForge.EVENT_BUS.addListener(ForgeEvents::renderWorldListener);
         MinecraftForge.EVENT_BUS.addListener(ForgeEvents::onTick);
     }
