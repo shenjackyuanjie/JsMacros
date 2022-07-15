@@ -21,7 +21,6 @@ public class ForgeEvents {
         OverlayRegistry.registerOverlayBelow(ForgeIngameGui.HUD_TEXT_ELEMENT, "jsmacros_hud", ForgeEvents::renderHudListener);
         MinecraftForge.EVENT_BUS.addListener(ForgeEvents::renderWorldListener);
         MinecraftForge.EVENT_BUS.addListener(ForgeEvents::onTick);
-        MinecraftForge.EVENT_BUS.addListener(ForgeEvents::onClientCommand);
     }
 
     public static void renderHudListener(ForgeIngameGui gui, MatrixStack mStack, float partialTicks, int width, int height) {
